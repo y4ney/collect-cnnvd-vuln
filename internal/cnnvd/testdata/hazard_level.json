@@ -1,0 +1,18 @@
+[
+	{
+		"dictLabel": "超危",
+		"dictValue": "1"
+	},
+	{
+		"dictLabel": "高危",
+		"dictValue": "2"
+	},
+	{
+		"dictLabel": "中危",
+		"dictValue": "3"
+	},
+	{
+		"dictLabel": "低危",
+		"dictValue": "4"
+	}
+]
