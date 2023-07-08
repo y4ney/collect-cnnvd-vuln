@@ -7,28 +7,28 @@ import (
 	"testing"
 )
 
-func TestReqHazardLevel_Fetch(t *testing.T) {
-	var hazardLevel []*model.HazardLevel
-	_ = utils.ReadFile("./testdata/hazard_level.json", &hazardLevel)
+func TestReqVulType_Fetch(t *testing.T) {
+	var vulnTypes []*model.VulnType
+	_ = utils.ReadFile("./testdata/vuln-type.json", &vulnTypes)
 	type args struct {
 		retry int
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    []*model.HazardLevel
+		want    []*model.VulnType
 		wantErr bool
 	}{
 		{
-			name:    "test for hazard level",
+			name:    "test for vuln type",
 			args:    args{5},
-			want:    hazardLevel,
+			want:    vulnTypes,
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &ReqHazardLevel{}
+			r := &ReqVulType{}
 			got, err := r.Fetch(tt.args.retry)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Fetch() error = %v, wantErr %v", err, tt.wantErr)

@@ -1,8 +1,8 @@
 package cnnvd
 
 import (
-	"github.com/y4ney/collect-cnnvd-vuln/internael/model"
-	"github.com/y4ney/collect-cnnvd-vuln/internael/utils"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
 	"path/filepath"
 )

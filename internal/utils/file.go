@@ -30,3 +30,18 @@ func ReadFile(filepath string, data any) error {
 
 	return nil
 }
+
+func Mkdir(dir string) error {
+	_, err := os.Stat(dir)
+	if err == nil {
+		return nil
+	}
+	if !os.IsNotExist(err) {
+		return err
+	}
+
+	if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+	return nil
+}

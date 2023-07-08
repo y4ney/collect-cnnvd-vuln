@@ -1,0 +1,194 @@
+[
+	{
+		"id": "0680cfe6c1a9437383b30849e4a407e9",
+		"pid": "0",
+		"label": "代码问题",
+		"value": "0680cfe6c1a9437383b30849e4a407e9",
+		"children": [
+			{
+				"id": "089c159c8059f08331abe3b1cc8369fa",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "授权问题",
+				"value": "089c159c8059f08331abe3b1cc8369fa",
+				"children": [
+					{
+						"id": "469dbf9f5678eb05cd8a894e4bd7d998",
+						"pid": "089c159c8059f08331abe3b1cc8369fa",
+						"label": "权限许可和访问控制问题",
+						"value": "469dbf9f5678eb05cd8a894e4bd7d998"
+					},
+					{
+						"id": "c3334c416486254b072ba47d1cfaa052",
+						"pid": "089c159c8059f08331abe3b1cc8369fa",
+						"label": "信任管理问题",
+						"value": "c3334c416486254b072ba47d1cfaa052"
+					}
+				]
+			},
+			{
+				"id": "1d8b5d48119cd54681df2b0c5f97087f",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "竞争条件问题",
+				"value": "1d8b5d48119cd54681df2b0c5f97087f"
+			},
+			{
+				"id": "281d2d70eacb7948993ffd69de3e7550",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "处理逻辑错误",
+				"value": "281d2d70eacb7948993ffd69de3e7550"
+			},
+			{
+				"id": "3d461a072fac08cff91f8072170b515f",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "数字错误",
+				"value": "3d461a072fac08cff91f8072170b515f"
+			},
+			{
+				"id": "64647e091a4b7194c5f1e4e9af752076",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "未声明问题",
+				"value": "64647e091a4b7194c5f1e4e9af752076"
+			},
+			{
+				"id": "7a2eb44620b844d597d7cd22fc7a212d",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "加密问题",
+				"value": "7a2eb44620b844d597d7cd22fc7a212d"
+			},
+			{
+				"id": "ab890e0b831d544f23d56adf86e14ae6",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "数据转换问题",
+				"value": "ab890e0b831d544f23d56adf86e14ae6"
+			},
+			{
+				"id": "ccd7bf691d838944c3c97d8ca4593591",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "资源管理错误",
+				"value": "ccd7bf691d838944c3c97d8ca4593591"
+			},
+			{
+				"id": "d1cc53c9a9a140740bacbfdb9e8acf39",
+				"pid": "0680cfe6c1a9437383b30849e4a407e9",
+				"label": "输入验证错误",
+				"value": "d1cc53c9a9a140740bacbfdb9e8acf39",
+				"children": [
+					{
+						"id": "267a7540cea5e402e7bc583bc2a04364",
+						"pid": "d1cc53c9a9a140740bacbfdb9e8acf39",
+						"label": "跨站请求伪造",
+						"value": "267a7540cea5e402e7bc583bc2a04364"
+					},
+					{
+						"id": "3db588d0182f5062ebacd59181a4d98e",
+						"pid": "d1cc53c9a9a140740bacbfdb9e8acf39",
+						"label": "缓冲区错误",
+						"value": "3db588d0182f5062ebacd59181a4d98e"
+					},
+					{
+						"id": "9e6938c1dd4145cb4f2b4c450d86a7ee",
+						"pid": "d1cc53c9a9a140740bacbfdb9e8acf39",
+						"label": "后置链接",
+						"value": "9e6938c1dd4145cb4f2b4c450d86a7ee"
+					},
+					{
+						"id": "e32d0e32dff54968c7db06f53bc04ee9",
+						"pid": "d1cc53c9a9a140740bacbfdb9e8acf39",
+						"label": "注入",
+						"value": "e32d0e32dff54968c7db06f53bc04ee9",
+						"children": [
+							{
+								"id": "a6c5a196557eeafcab433d68dba2d088",
+								"pid": "e32d0e32dff54968c7db06f53bc04ee9",
+								"label": "代码注入",
+								"value": "a6c5a196557eeafcab433d68dba2d088"
+							},
+							{
+								"id": "ade8b0d960295c722203a9217afd96d7",
+								"pid": "e32d0e32dff54968c7db06f53bc04ee9",
+								"label": "跨站脚本",
+								"value": "ade8b0d960295c722203a9217afd96d7"
+							},
+							{
+								"id": "b115b6c1131c597db16cd065631c1929",
+								"pid": "e32d0e32dff54968c7db06f53bc04ee9",
+								"label": "命令注入",
+								"value": "b115b6c1131c597db16cd065631c1929"
+							},
+							{
+								"id": "c57c028a44a106033c09c3adda2dee66",
+								"pid": "e32d0e32dff54968c7db06f53bc04ee9",
+								"label": "格式化字符串错误",
+								"value": "c57c028a44a106033c09c3adda2dee66"
+							},
+							{
+								"id": "f46462fa83a93e6b87ca649f6b6e1914",
+								"pid": "e32d0e32dff54968c7db06f53bc04ee9",
+								"label": "SQL注入",
+								"value": "f46462fa83a93e6b87ca649f6b6e1914"
+							}
+						]
+					},
+					{
+						"id": "f1e42fb72d84cf58a3550d338e2091d2",
+						"pid": "d1cc53c9a9a140740bacbfdb9e8acf39",
+						"label": "路径遍历",
+						"value": "f1e42fb72d84cf58a3550d338e2091d2"
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": "2a2422aa8de9d9ede4b4cf32d6623c73",
+		"pid": "0",
+		"label": "配置错误",
+		"value": "2a2422aa8de9d9ede4b4cf32d6623c73"
+	},
+	{
+		"id": "98fcc818f1b06ca045b4de137e97ea74",
+		"pid": "0",
+		"label": "其他",
+		"value": "98fcc818f1b06ca045b4de137e97ea74"
+	},
+	{
+		"id": "cb5e8e3639eff60c6dcdbea6be4086a3",
+		"pid": "0",
+		"label": "环境问题",
+		"value": "cb5e8e3639eff60c6dcdbea6be4086a3",
+		"children": [
+			{
+				"id": "2fca46b869eb4dbbf123b786e3d2c932",
+				"pid": "cb5e8e3639eff60c6dcdbea6be4086a3",
+				"label": "故障注入",
+				"value": "2fca46b869eb4dbbf123b786e3d2c932"
+			},
+			{
+				"id": "95a945b87bd63a6cf5b61dbb9b6acbb2",
+				"pid": "cb5e8e3639eff60c6dcdbea6be4086a3",
+				"label": "信息泄露",
+				"value": "95a945b87bd63a6cf5b61dbb9b6acbb2",
+				"children": [
+					{
+						"id": "62f3a6b593c9278596bd7a898cb812e8",
+						"pid": "95a945b87bd63a6cf5b61dbb9b6acbb2",
+						"label": "日志信息泄露",
+						"value": "62f3a6b593c9278596bd7a898cb812e8"
+					},
+					{
+						"id": "a5a2d07d1b900e7fb212bfc967137823",
+						"pid": "95a945b87bd63a6cf5b61dbb9b6acbb2",
+						"label": "调试信息泄露",
+						"value": "a5a2d07d1b900e7fb212bfc967137823"
+					},
+					{
+						"id": "ea98887a0991b0b44cfaa0602b74a654",
+						"pid": "95a945b87bd63a6cf5b61dbb9b6acbb2",
+						"label": "侧信道信息泄露",
+						"value": "ea98887a0991b0b44cfaa0602b74a654"
+					}
+				]
+			}
+		]
+	}
+]

@@ -1,8 +1,8 @@
 package cnnvd
 
 import (
-	"github.com/y4ney/collect-cnnvd-vuln/internael/model"
-	"github.com/y4ney/collect-cnnvd-vuln/internael/utils"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
 	"path/filepath"
 )
@@ -25,15 +25,10 @@ type ResVendor struct {
 
 func (r *ReqVendor) Fetch(retry int) ([]*model.Vendor, error) {
 	// 获取供应商信息
-	http := utils.HTTP{
-		URL:    utils.URL(Schema, Domain, VendorPath),
-		Method: utils.Post,
-		Retry:  retry,
-		Body:   r,
-	}
+	http := utils.HTTP{URL: utils.URL(Schema, Domain, VendorPath), Method: utils.Post, Retry: retry, Body: r}
 	var res ResVendor
 	if err := http.Fetch(&res); err != nil {
-		return nil, xerrors.Errorf("failed to fetch:%w", err)
+		return nil, xerrors.Errorf("failed to fetch vendor:%w", err)
 	}
 
 	var vendors []*model.Vendor
@@ -41,7 +36,6 @@ func (r *ReqVendor) Fetch(retry int) ([]*model.Vendor, error) {
 		vendors = append(vendors, data)
 	}
 
-	_ = utils.WriteFile("./testdata/vendor.json", vendors)
 	return vendors, nil
 }
 

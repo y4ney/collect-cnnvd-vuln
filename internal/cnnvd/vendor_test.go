@@ -1,8 +1,8 @@
 package cnnvd
 
 import (
-	"github.com/y4ney/collect-cnnvd-vuln/internael/model"
-	"github.com/y4ney/collect-cnnvd-vuln/internael/utils"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"reflect"
 	"testing"
 )
@@ -23,7 +23,6 @@ func TestReqVendor_Fetch(t *testing.T) {
 		want    []*model.Vendor
 		wantErr bool
 	}{
-		// TODO 测试未通过
 		{
 			name:    "test for vendor",
 			fields:  fields{""},
