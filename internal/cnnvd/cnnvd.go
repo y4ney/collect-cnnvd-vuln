@@ -16,6 +16,10 @@ const (
 	Domain = "www.cnnvd.org.cn"
 )
 
+type CnnvdClient interface {
+	Fetch(retry int) (any, error)
+}
+
 // ResCode 响应码
 type ResCode struct {
 	Code    int    `json:"code,omitempty"`    // 代码

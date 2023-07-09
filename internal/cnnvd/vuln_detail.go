@@ -9,7 +9,7 @@ import (
 
 const (
 	VulnDetailPath = "web/cnnvdVul/getCnnnvdDetailOnDatasource"
-	VulDetailFile  = "vul_detail"
+	VulDetailFile  = "vuln_detail"
 )
 
 // ReqVulDetail cnnvd漏洞详情请求参数

@@ -3,7 +3,7 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/json"
-	"github.com/go-resty/resty"
+	"github.com/go-resty/resty/v2"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/xerrors"
 	"math"
