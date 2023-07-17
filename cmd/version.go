@@ -10,8 +10,8 @@ import (
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the collect-cnnvd-vuln version",
-	Long:  `All software has versions. This is collect-cnnvd-vuln's`,
+	Short: "打印 collect-cnnvd-vuln 的版本",
+	Long:  `所有的软件导游版本，collect-cnnvd-vuln也不例外`,
 	RunE:  runPrintVersion,
 }
 

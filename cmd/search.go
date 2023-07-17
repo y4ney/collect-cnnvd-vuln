@@ -15,14 +15,11 @@ const (
 	QueryVulnList = "vuln"
 	QueryVendor   = "vendor"
 	QueryProduct  = "product"
-	FirstPage     = 1
-	MaxPageSize   = 50
 	RetryNum      = 5
 )
 
 var (
 	Keyword string
-	Short   bool
 	Retry   int
 
 	PageIndex   int
@@ -37,32 +34,21 @@ var (
 	severity  = map[int]string{0: "未知", 1: "超危", 2: "高危", 3: "中危", 4: "低危"}
 	searchCmd = &cobra.Command{
 		Use:   "search",
-		Short: "Search the cnnvd vuln",
+		Short: "搜索 CNNVD 漏洞信息",
 		Run:   runSearchVuln,
 	}
 )
 
 func init() {
-	searchCmd.Flags().StringVarP(&Type, "type", "t", QueryVulnList,
-		fmt.Sprintf("specify the type, only support %s, %s and %s",
-			QueryVulnList, QueryVendor, QueryProduct))
-	searchCmd.Flags().StringVarP(&Keyword, "keyword", "k", "", "specify the keyword for search")
-	searchCmd.Flags().IntVarP(&Retry, "retry", "r", RetryNum, "specify retry number for search")
-
-	searchCmd.Flags().IntVar(&PageIndex, "page-index", FirstPage,
-		"specify the current page, only work with --type=vuln")
-	searchCmd.Flags().IntVar(&PageSize, "page-size", MaxPageSize,
-		"specify the page size, only work with --type=vuln")
-	searchCmd.Flags().StringVar(&HazardLevel, "hazard-level", "",
-		"specify the hazard level(超危、高危、中危和低危), only work with --type=vuln")
+	searchCmd.Flags().StringVarP(&Type, "type", "t", QueryVulnList, fmt.Sprintf("指定类型，仅支持 %s, %s 和 %s", QueryVulnList, QueryVendor, QueryProduct))
+	searchCmd.Flags().StringVarP(&Keyword, "keyword", "k", "", "指定搜索的关键词")
+	searchCmd.Flags().IntVarP(&Retry, "retry", "r", RetryNum, "指定请求的重试次数")
+	searchCmd.Flags().IntVar(&PageIndex, "page-index", cnnvd.FirstPage, "指定当前的页码，仅在 --type=vuln 时有效")
+	searchCmd.Flags().IntVar(&PageSize, "page-size", cnnvd.MaxPageSize, "指定页数大小 仅在 --type=vuln 时有效")
+	searchCmd.Flags().StringVar(&HazardLevel, "hazard-level", "", "指定威胁等级，仅支持 超危、高危、中危和低危, 仅在 --type=vuln 时有效")
 	// TODO 优化
-	searchCmd.Flags().StringVar(&Product, "product", "",
-		"specify the product, please search by --type=product to get label first, only work with --type=vuln")
-	searchCmd.Flags().StringVar(&Vendor, "vendor", "",
-		"specify the vendor, please search by --type=vendor to get label first, only work with --type=vuln")
-
-	searchCmd.Flags().BoolVar(&Short, "short", true,
-		"if specify true,you will get vuln list,otherwise you will get vuln detail, only work with --type=vuln")
+	searchCmd.Flags().StringVar(&Product, "product", "", "指定商品编号，仅在 --type=vuln 时有效，请先通过 --type=product 来获取商品编号")
+	searchCmd.Flags().StringVar(&Vendor, "vendor", "", "指定供应商编号，仅在 --type=vuln 时有效，请先通过 --type=vendor 获取供应商编号 ")
 	utils.BindFlags(searchCmd)
 }
 func runSearchVuln(_ *cobra.Command, _ []string) {

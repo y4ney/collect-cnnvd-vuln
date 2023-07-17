@@ -106,7 +106,7 @@ func init() {
 	rootCmd.AddCommand(schemaCmd)
 	rootCmd.AddCommand(searchCmd)
 	rootCmd.AddCommand(fetchCmd)
-
+	rootCmd.AddCommand(saveCmd)
 	// TODO Subscribe 订阅 cmd
 	// TODO 数字大屏
 

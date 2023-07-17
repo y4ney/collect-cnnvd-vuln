@@ -23,13 +23,13 @@ var Type string
 
 var schemaCmd = &cobra.Command{
 	Use:   "schema",
-	Short: "Print the cnnvd vuln's json file schema",
+	Short: "打印 CNNVD 漏洞信息的json文件结构",
 	RunE:  runGenerateSchema,
 }
 
 func init() {
 	schemaCmd.Flags().StringVarP(&Type, "type", "t", VulnDetailSchema,
-		fmt.Sprintf("specify the type(only support %s, %s, %s, %s, %s and %s)",
+		fmt.Sprintf("指定数据类型(只支持 %s, %s, %s, %s, %s 和 %s)",
 			VulnListSchema, VulnDetailSchema, HazardLevelSchema, VendorSchema, ProductSchema, VulnTypeSchema),
 	)
 
@@ -49,7 +49,7 @@ func runGenerateSchema(_ *cobra.Command, _ []string) error {
 	case VulnListSchema:
 		schema = jsonschema.Reflect(&model.Record{})
 	case VulnDetailSchema:
-		schema = jsonschema.Reflect(&model.CNNVDDetail{})
+		schema = jsonschema.Reflect(&model.VulDetail{})
 	default:
 		return xerrors.Errorf("type %s is not supported", Type)
 	}
