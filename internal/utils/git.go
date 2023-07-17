@@ -1,14 +1,21 @@
 package utils
 
 import (
+	"fmt"
 	"golang.org/x/xerrors"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
+	"time"
 )
 
 type Git struct {
 	URL        string
 	Dir        string
 	RemoteName string
+	Email      string
+	Name       string
+	Token      string
 }
 
 func (g *Git) Clone() error {
@@ -46,4 +53,65 @@ func (g *Git) Pull() error {
 	}
 
 	return xerrors.Errorf("failed to pull %s:%w", g.URL, err)
+}
+
+func (g *Git) Push() error {
+	// 打开仓库
+	repo, err := git.PlainOpen(g.Dir)
+	if err != nil {
+		return xerrors.Errorf("failed to open repo path:%w", err)
+	}
+
+	// 获取默认远程仓库
+	remote, err := repo.Remote(g.RemoteName)
+	if err != nil {
+		return xerrors.Errorf("failed to get remote repo:%w", err)
+	}
+
+	// 验证推送
+	err = remote.Push(&git.PushOptions{RemoteName: g.RemoteName, Auth: &http.BasicAuth{Username: g.Token}})
+	if err != nil && err != git.NoErrAlreadyUpToDate {
+		return xerrors.Errorf("failed to push repo:%w", err)
+	}
+
+	return nil
+}
+
+func (g *Git) Add() error {
+	repo, err := git.PlainOpen(g.Dir)
+	if err != nil {
+		return xerrors.Errorf("failed to open repo path:%w", err)
+	}
+
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return xerrors.Errorf("failed to get worktree :%w", err)
+	}
+
+	_, err = worktree.Add(".")
+	if err != nil {
+		return xerrors.Errorf("failed to add :%w", err)
+	}
+	return nil
+}
+
+func (g *Git) Commit() error {
+	repo, err := git.PlainOpen(g.Dir)
+	if err != nil {
+		return xerrors.Errorf("failed to open repo path:%w", err)
+	}
+
+	worktree, err := repo.Worktree()
+	if err != nil {
+		return xerrors.Errorf("failed to get worktree :%w", err)
+	}
+
+	_, err = worktree.Commit(fmt.Sprintf("update at %v", time.Now().Local()), &git.CommitOptions{
+		Author: &object.Signature{Name: g.Name, Email: g.Email, When: time.Now().Local()},
+	})
+	if err != nil {
+		return xerrors.Errorf("failed to commit :%w", err)
+	}
+
+	return nil
 }

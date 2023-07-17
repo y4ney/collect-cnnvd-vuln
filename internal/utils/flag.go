@@ -5,7 +5,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"golang.org/x/xerrors"
 	"os"
+	"strconv"
+	"time"
 )
 
 // BindFlags binds the viper config values to the flags
@@ -22,4 +25,12 @@ func BindFlags(cmd *cobra.Command) {
 			}
 		}
 	})
+}
+func FormatMonth(month time.Month) (int, error) {
+	m := fmt.Sprintf("%d", month)
+	mm, err := strconv.Atoi(m)
+	if err != nil {
+		return 0, xerrors.Errorf("failed to convert month %v:%v", month, err)
+	}
+	return mm, nil
 }
