@@ -1,16 +1,5 @@
 package model
 
-import "time"
-
-type Metadata struct {
-	NextIncrementUpdate time.Time
-	NextAllUpdate       time.Time
-	UpdatedAt           time.Time
-	TotalVuln           int    `json:"total_vuln"`
-	LatestCnnvd         string `json:"latest_cnnvd"`
-	DownloadedAt        time.Time
-}
-
 // HazardLevel 威胁等级
 type HazardLevel struct {
 	DictLabel string `json:"dictLabel,omitempty"`
@@ -54,8 +43,8 @@ type Record struct {
 
 // VulDetail 漏洞详情数据
 type VulDetail struct {
-	CNNVDDetail       `json:"cnnvdDetail,omitempty"` // CNNVD详情
-	ReceviceVulDetail string                         `json:"receviceVulDetail,omitempty"` // 接收到的漏洞详情
+	CNNVDDetail       `json:"cnnvdDetail,omitempty"`              // CNNVD详情
+	ReceviceVulDetail string `json:"receviceVulDetail,omitempty"` // 接收到的漏洞详情
 }
 
 // CNNVDDetail CNNVD详情

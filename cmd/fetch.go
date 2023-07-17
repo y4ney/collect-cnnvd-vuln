@@ -6,10 +6,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/cnnvd"
+	"github.com/y4ney/collect-cnnvd-vuln/internal/meta"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
-	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -22,7 +22,6 @@ const (
 	ProductFile     = "product.json"
 	VendorFile      = "vendor.json"
 	VulnTypeFile    = "vuln_type.json"
-	MetadataFile    = "metadata.json"
 
 	MinYear  = 1988
 	MinMonth = 1
@@ -31,7 +30,6 @@ const (
 	IncrementalUpdate = "increment"
 	AllUpdate         = "all"
 	Specific          = "specific"
-	OldestCnnvdId     = "CNNVD-198801-001"
 )
 
 var (
@@ -62,53 +60,37 @@ func init() {
 	fetchCmd.Flags().BoolVarP(&Complete, "complete", "c", true, "收集漏洞详情")
 	fetchCmd.Flags().IntVarP(&Retry, "retry", "r", RetryNum, "指定发送请求的次数")
 	fetchCmd.Flags().BoolVarP(&Github, "github", "g", true, "是否上传到 Github 仓库中")
-
 }
 func runFetch(cmd *cobra.Command, _ []string) {
 	var (
-		metaPath      = filepath.Join(Dir, MetadataFile)
-		totalVuln     = 0
-		latestVulnId  = OldestCnnvdId
-		latestVuln, _ = cnnvd.NewCNNVD(latestVulnId)
+		metadata    meta.Data
+		newCnnvd    *cnnvd.CNNVD
+		latestCnnvd *cnnvd.CNNVD
 	)
 
-	var newCnnvd *cnnvd.CNNVD
 	getVulnExtraInfo()
-	for _, feed := range getFeeds() {
-		total, latestCnnvdId := getVulnInfo(feed)
-		totalVuln += total
-		newCnnvd, _ = cnnvd.NewCNNVD(latestCnnvdId)
-		if newCnnvd.After(latestVuln) {
-			latestVuln = newCnnvd
-			latestVulnId = latestCnnvdId
+	for _, feed := range getFeeds(&metadata) {
+		total, newCnnvdId := getVulnInfo(feed)
+		metadata.TotalVuln += total
+		newCnnvd, _ = cnnvd.NewCNNVD(newCnnvdId)
+		latestCnnvd, _ = cnnvd.NewCNNVD(metadata.LatestCnnvd)
+		if newCnnvd.After(latestCnnvd) {
+			latestCnnvd = newCnnvd
+			metadata.LatestCnnvd = newCnnvdId
 		}
-		log.Debug().Interface("Keyword", feed).Str("Latest CNNVD", latestVulnId).Int("Total Vuln", totalVuln).
+		log.Debug().Interface("Keyword", feed).Str("Latest CNNVD", metadata.LatestCnnvd).Int("Total Vuln", metadata.TotalVuln).
 			Msg("success to fetch vuln info")
 	}
-	utils.WriteMetaFile(metaPath, totalVuln, latestVulnId)
+	metadata.Write(Dir, metadata.TotalVuln, metadata.LatestCnnvd)
 
-	v := viper.New()
-	v.AutomaticEnv()
-	git := utils.Git{
-		URL:        v.GetString("CNNVD_URL"),
-		Dir:        Dir,
-		RemoteName: v.GetString("REMOTE_NAME"),
-		Name:       v.GetString("NAME"),
-		Email:      v.GetString("EMAIL"),
-		Token:      v.GetString("TOKEN"),
-	}
-	if err := git.Add(); err != nil {
-		log.Fatal().Interface("Git", git).Msgf("failed to git add:%v", err)
-	}
-	if err := git.Commit(); err != nil {
-		log.Fatal().Interface("Git", git).Msgf("failed to git commit:%v", err)
-	}
-	if err := git.Push(); err != nil {
-		log.Fatal().Interface("Git", git).Msgf("failed to git push:%v", err)
+	// push 到 github 的仓库中
+	if Github {
+		pushToGithub()
 	}
 }
 
-func getFeeds() []*cnnvd.CNNVD {
+// 根据更新类型，根据年和月构造需要爬取的漏洞信息
+func getFeeds(metadata *meta.Data) []*cnnvd.CNNVD {
 	var (
 		feeds   []*cnnvd.CNNVD
 		month   int
@@ -127,7 +109,10 @@ func getFeeds() []*cnnvd.CNNVD {
 				feeds = append(feeds, &cnnvd.CNNVD{Year: y, Month: m})
 			}
 		}
+		metadata.Init(Dir)
+
 	case Specific:
+		metadata.Init(Dir)
 		if Month != ThisMonth {
 			feeds = append(feeds, &cnnvd.CNNVD{Year: Year, Month: Month})
 
@@ -136,21 +121,10 @@ func getFeeds() []*cnnvd.CNNVD {
 				feeds = append(feeds, &cnnvd.CNNVD{Year: Year, Month: m})
 			}
 		}
+		metadata.Read(Dir)
 
 	case IncrementalUpdate:
-		var metadata model.Metadata
-		path := filepath.Join(Dir, MetadataFile)
-		fileInfo, err := os.Stat(path)
-		if err != nil {
-			log.Fatal().Str("Path", path).Msgf("failed to get the size:%v", err)
-		}
-		if fileInfo.Size() == 0 {
-			log.Fatal().Str("Path", path).Msg("metadata file ie empty,please run with --type=specific")
-		}
-		err = utils.ReadFile(path, &metadata)
-		if err != nil {
-			log.Fatal().Str("Path", path).Msgf("failed to read metadata:%v", err)
-		}
+		metadata.Read(Dir)
 		if time.Now().After(metadata.NextIncrementUpdate) {
 			lastCnnvd, _ := cnnvd.NewCNNVD(metadata.LatestCnnvd)
 			var start, end int
@@ -172,6 +146,9 @@ func getFeeds() []*cnnvd.CNNVD {
 				}
 			}
 		}
+
+	default:
+		log.Fatal().Msgf("Do not support type:%s", Type)
 	}
 	return feeds
 }
@@ -179,7 +156,10 @@ func getFeeds() []*cnnvd.CNNVD {
 func getVulnExtraInfo() {
 	log.Info().Str("Directory", Dir).Msg("Saving CNNVD extra data...")
 	// 下载漏洞等级
-	bar := pb.StartNew(3)
+	var bar *pb.ProgressBar
+	if !verbose {
+		bar = pb.StartNew(4)
+	}
 	var reqHazardLevel cnnvd.ReqHazardLevel
 	hazardLevel, err := reqHazardLevel.Fetch(Retry)
 	if err != nil {
@@ -190,7 +170,11 @@ func getVulnExtraInfo() {
 		log.Fatal().Str("Hazard level file", filepath.Join(Dir, HazardLevelFile)).
 			Msgf("failed to write hazard level:%w", err)
 	}
-	bar.Increment()
+	if verbose {
+		log.Debug().Str("File", filepath.Join(Dir, HazardLevelFile)).Msg("success to save hazard level file")
+	} else {
+		bar.Increment()
+	}
 
 	// 下载产品信息
 	var reqProduct cnnvd.ReqProduct
@@ -203,7 +187,11 @@ func getVulnExtraInfo() {
 		log.Fatal().Str("Product file", filepath.Join(Dir, ProductFile)).
 			Msgf("failed to write product:%w", err)
 	}
-	bar.Increment()
+	if verbose {
+		log.Debug().Str("File", filepath.Join(Dir, ProductFile)).Msg("success to save product file")
+	} else {
+		bar.Increment()
+	}
 
 	// 下载供应商信息
 	var reqVendor cnnvd.ReqVendor
@@ -216,7 +204,11 @@ func getVulnExtraInfo() {
 		log.Fatal().Str("Vendor file", filepath.Join(Dir, VendorFile)).
 			Msgf("failed to write vendor:%w", err)
 	}
-	bar.Increment()
+	if verbose {
+		log.Debug().Str("File", filepath.Join(Dir, VendorFile)).Msg("success to save vendor file")
+	} else {
+		bar.Increment()
+	}
 
 	// 下载漏洞类型
 	var reqVulnType cnnvd.ReqVulType
@@ -229,7 +221,11 @@ func getVulnExtraInfo() {
 		log.Fatal().Str("Vuln type file", filepath.Join(Dir, VulnTypeFile)).
 			Msgf("failed to write vuln type:%w", err)
 	}
-	bar.Finish()
+	if verbose {
+		log.Debug().Str("File", filepath.Join(Dir, VulnTypeFile)).Msg("success to save vuln type file")
+	} else {
+		bar.Finish()
+	}
 }
 
 func getVulnInfo(cnnvdId *cnnvd.CNNVD) (int, string) {
@@ -257,7 +253,7 @@ func getVulnInfo(cnnvdId *cnnvd.CNNVD) (int, string) {
 	if !verbose {
 		bar = pb.StartNew(total)
 	}
-	latestCnnvdId := OldestCnnvdId
+	latestCnnvdId := meta.OldestCnnvdId
 	latestCnnvd, _ := cnnvd.NewCNNVD(latestCnnvdId)
 	for i := 1; i <= loopNum; i++ {
 		reqList = cnnvd.ReqVulList{PageIndex: 1, PageSize: cnnvd.MaxPageSize, Keyword: keyword}
@@ -322,4 +318,27 @@ func save(vulnId string, data interface{}) error {
 		log.Debug().Str("file", filename).Msg("success to save cnnvd info")
 	}
 	return nil
+}
+
+func pushToGithub() {
+	v := viper.New()
+	v.AutomaticEnv()
+	git := utils.Git{
+		URL:        v.GetString("CNNVD_URL"),
+		Dir:        Dir,
+		RemoteName: v.GetString("REMOTE_NAME"),
+		Name:       v.GetString("NAME"),
+		Email:      v.GetString("EMAIL"),
+		Token:      v.GetString("TOKEN"),
+	}
+	if err := git.Add(); err != nil {
+		log.Fatal().Interface("Git", git).Msgf("failed to git add:%v", err)
+	}
+	if err := git.Commit(); err != nil {
+		log.Fatal().Interface("Git", git).Msgf("failed to git commit:%v", err)
+	}
+	if err := git.Push(); err != nil {
+		log.Fatal().Interface("Git", git).Msgf("failed to git push:%v", err)
+	}
+	log.Info().Str("URL", git.URL).Msg("success to git push to remote repo")
 }

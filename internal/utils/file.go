@@ -12,25 +12,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
-func WriteMetaFile(filepath string, total int, latestCnnvd string) {
-	var (
-		now  = time.Now()
-		meta = model.Metadata{
-			NextIncrementUpdate: now.AddDate(0, 0, 1),
-			NextAllUpdate:       now.AddDate(0, 1, 0),
-			UpdatedAt:           now,
-			TotalVuln:           total,
-			LatestCnnvd:         latestCnnvd,
-		}
-	)
-
-	if err := WriteFile(filepath, meta); err != nil {
-		log.Fatal().Str("File", filepath).Interface("Metadata", meta).Msg("failed to write metadata")
-	}
-}
 func WriteFile(filepath string, data any) error {
 	d, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {

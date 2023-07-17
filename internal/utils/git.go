@@ -18,6 +18,7 @@ type Git struct {
 	Token      string
 }
 
+// TODO git clean
 func (g *Git) Clone() error {
 	// 创建目录
 	if err := Mkdir(g.Dir); err != nil {

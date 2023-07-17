@@ -1,4 +1,4 @@
-package trivy
+package boltdb
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 	"golang.org/x/xerrors"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -44,9 +43,8 @@ func DownloadTrivyDB(dir string) (*metadata.Metadata, error) {
 	return &meta, nil
 }
 
-func GetCvdIdFromTrivyDB(dir string) ([]string, error) {
+func GetCvdIdFromTrivyDB(path string) (map[string]bool, error) {
 	// 构建数据库文件路径
-	path := filepath.Join(dir, DB, DBFile)
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return nil, xerrors.Errorf("%s is not exist:%w", path, err)
@@ -60,7 +58,7 @@ func GetCvdIdFromTrivyDB(dir string) ([]string, error) {
 	defer trivyDB.Close()
 
 	// 读取数据
-	var CveIds []string
+	CveIds := map[string]bool{}
 	if err = trivyDB.View(func(tx *bolt.Tx) error {
 		// 打开 bucket（如果不存在则创建）
 		bucket := tx.Bucket([]byte(vulnBucket))
@@ -71,7 +69,7 @@ func GetCvdIdFromTrivyDB(dir string) ([]string, error) {
 		// 遍历并获取 bucket 中的全部key
 		if err = bucket.ForEach(func(k, v []byte) error {
 			if strings.Contains(string(k), "CVE") {
-				CveIds = append(CveIds, string(k))
+				CveIds[string(k)] = true
 			}
 			return nil
 		}); err != nil {
