@@ -4,11 +4,9 @@ import (
 	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
-	"path/filepath"
 )
 
 const (
-	ProductFile = "product.json"
 	ProductPath = "web/homePage/getProductSelectList"
 )
 
@@ -38,13 +36,4 @@ func (r *ReqProduct) Fetch(retry int) ([]*model.Product, error) {
 
 	_ = utils.WriteFile("./testdata/product.json", products)
 	return products, nil
-}
-
-func (r *ReqProduct) Save(data []*model.Product, dir string) error {
-	path := filepath.Join(dir, ProductFile)
-	err := utils.WriteFile(path, data)
-	if err != nil {
-		return xerrors.Errorf("failed to save product:%w", err)
-	}
-	return nil
 }

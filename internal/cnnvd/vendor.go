@@ -4,12 +4,10 @@ import (
 	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
-	"path/filepath"
 )
 
 const (
 	VendorPath = "web/homePage/getVendorSelectList"
-	VendorFile = "vendor.json"
 )
 
 // ReqVendor 供应商选择列表请求参数
@@ -37,13 +35,4 @@ func (r *ReqVendor) Fetch(retry int) ([]*model.Vendor, error) {
 	}
 
 	return vendors, nil
-}
-
-func (r *ReqVendor) Save(data []model.Vendor, dir string) error {
-	path := filepath.Join(dir, VendorFile)
-	err := utils.WriteFile(path, data)
-	if err != nil {
-		return xerrors.Errorf("failed to save vendor:%w", err)
-	}
-	return nil
 }

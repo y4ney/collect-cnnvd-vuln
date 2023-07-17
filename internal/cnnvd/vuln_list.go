@@ -5,11 +5,11 @@ import (
 	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
 	"math"
-	"path/filepath"
 )
 
 const (
-	MaxPageSize  = 100
+	FirstPage    = 1
+	MaxPageSize  = 50
 	VulnListPath = "web/homePage/cnnvdVulList"
 	VulListFile  = "vuln_list"
 )
@@ -63,29 +63,13 @@ func (r *ReqVulList) Fetch(retry int) ([]*model.Record, error) {
 	return vulns, nil
 }
 
-func (r *ReqVulList) Save(data []*model.Record, dir string) error {
-	// 创建目录
-	path := filepath.Join(dir, VulListFile)
-	if err := utils.Mkdir(path); err != nil {
-		return xerrors.Errorf("failed to mkdir %s:%w", path, err)
-	}
-
-	// 写入文件
-	for _, vuln := range data {
-		if err := SaveCNNVDPerYear(path, vuln.CnnvdCode, vuln); err != nil {
-			return xerrors.Errorf("failed to save %s:%w", vuln.CnnvdCode, err)
-		}
-	}
-	return nil
-}
-
-func (r *ReqVulList) getPageNum(retry int) (num int, err error) {
+func (r *ReqVulList) GetPageInfo(retry int) (loopNum int, total int, err error) {
 	http := utils.HTTP{URL: utils.URL(Schema, Domain, VulnListPath), Method: utils.Post, Retry: retry, Body: r}
 
 	var res ResVulList
 	if err := http.Fetch(&res); err != nil {
-		return 0, xerrors.Errorf("failed to get page num:%w", err)
+		return 0, 0, xerrors.Errorf("failed to get page num:%w", err)
 	}
 
-	return int(math.Ceil(float64(res.Data.Total) / float64(res.Data.PageSize))), nil
+	return int(math.Ceil(float64(res.Data.Total) / float64(res.Data.PageSize))), res.Data.Total, nil
 }

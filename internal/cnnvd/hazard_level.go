@@ -4,12 +4,10 @@ import (
 	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
-	"path/filepath"
 )
 
 const (
 	HazardLevelPath = "web/dictionaries/type/hazardLevel"
-	HazardLevelFile = "hazard_level.json"
 )
 
 // ReqHazardLevel 威胁等级请求参数
@@ -34,13 +32,4 @@ func (r *ReqHazardLevel) Fetch(retry int) ([]*model.HazardLevel, error) {
 		hazardLevel = append(hazardLevel, data)
 	}
 	return hazardLevel, nil
-}
-
-func (r *ReqHazardLevel) Save(data []*model.HazardLevel, dir string) error {
-	path := filepath.Join(dir, HazardLevelFile)
-	err := utils.WriteFile(path, data)
-	if err != nil {
-		return xerrors.Errorf("failed to save hazard level:%w", err)
-	}
-	return nil
 }

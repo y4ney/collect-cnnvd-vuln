@@ -4,12 +4,10 @@ import (
 	"github.com/y4ney/collect-cnnvd-vuln/internal/model"
 	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
 	"golang.org/x/xerrors"
-	"path/filepath"
 )
 
 const (
 	VulnTypePath = "web/homePage/vulTypeList"
-	VulnTypeFile = "vul_type.json"
 )
 
 // ReqVulType 漏洞类型列表请求参数
@@ -37,12 +35,4 @@ func (r *ReqVulType) Fetch(retry int) ([]*model.VulnType, error) {
 
 	_ = utils.WriteFile("./testdata/vuln-type.json", vulnTypes)
 	return vulnTypes, nil
-}
-func (r *ReqVulType) Save(data []model.VulnType, dir string) error {
-	path := filepath.Join(dir, VulnTypeFile)
-	err := utils.WriteFile(path, data)
-	if err != nil {
-		return xerrors.Errorf("failed to save vuln type:%w", err)
-	}
-	return nil
 }

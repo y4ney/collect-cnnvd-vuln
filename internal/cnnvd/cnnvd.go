@@ -2,10 +2,8 @@ package cnnvd
 
 import (
 	"fmt"
-	"github.com/y4ney/collect-cnnvd-vuln/internal/utils"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/xerrors"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -66,99 +64,31 @@ func (c *CNNVD) FormatCNNVD() (string, error) {
 	return cnnvd, nil
 }
 
-func (c *CNNVD) GetDate() (*time.Time, error) {
-	date, err := time.Parse("2006-01", fmt.Sprintf("%v-%v", c.Year, c.Month))
+func (c *CNNVD) GetDate() *time.Time {
+	date, err := time.Parse("2006-01", fmt.Sprintf("%v-%02d", c.Year, c.Month))
 	if err != nil {
-		return nil, xerrors.Errorf("fail to get date:%w", err)
+		log.Fatal().Interface("CNNVD ID", c).Msgf("fail to get date:%v", err)
 	}
-	return &date, nil
+	return &date
 }
 
-func (c *CNNVD) Before(item *CNNVD) (bool, error) {
-	cDate, err := c.GetDate()
-	if err != nil {
-		return false, err
-	}
-	itemDate, err := item.GetDate()
-	if err != nil {
-		return false, err
+func (c *CNNVD) After(item *CNNVD) bool {
+	var (
+		cDate    = c.GetDate()
+		itemDate = item.GetDate()
+	)
+	if cDate.Before(*itemDate) {
+		return false
 	}
 	if cDate.After(*itemDate) {
-		return false, nil
-	}
-	if cDate.Before(*itemDate) {
-		return true, nil
-	}
-	if c.ID < item.ID {
-		return true, nil
-	}
-	return false, nil
-
-}
-
-func (c *CNNVD) After(item *CNNVD) (bool, error) {
-	cDate, err := c.GetDate()
-	if err != nil {
-		return false, err
-	}
-	itemDate, err := item.GetDate()
-	if err != nil {
-		return false, err
-	}
-	if cDate.Before(*itemDate) {
-		return false, nil
-	}
-	if cDate.After(*itemDate) {
-		return true, nil
+		return true
 	}
 	if c.ID > item.ID {
-		return true, nil
+		return true
 	}
-	return false, nil
+	return false
 }
 
 func (c *CNNVD) Equal(item *CNNVD) bool {
 	return c.Year == item.Year && c.Month == item.Month && c.ID == item.ID
-}
-
-func LatestCNNVD(str1, str2 string) (string, error) {
-	cnnvd1, err := NewCNNVD(str1)
-	if err != nil {
-		return "", xerrors.Errorf("fail to new %s:%w\n", str1, err)
-	}
-	cnnvd2, err := NewCNNVD(str2)
-	if err != nil {
-		return "", xerrors.Errorf("fail to new %s:%w\n", str2, err)
-	}
-	flag, err := cnnvd1.After(cnnvd2)
-	if err != nil {
-		return "", err
-	}
-	if flag {
-		return str1, nil
-	}
-	return str2, nil
-}
-
-// SaveCNNVDPerYear 存储每年的漏洞
-func SaveCNNVDPerYear(dirPath string, cnnvdID string, data interface{}) error {
-	// 创建 cnnvd 对象
-	cnnvd, err := NewCNNVD(cnnvdID)
-	if err != nil {
-		return xerrors.Errorf("failed to new %s:%w", cnnvdID, err)
-	}
-
-	// 根据年和月创建目录
-	yearDir := filepath.Join(dirPath, strconv.Itoa(cnnvd.Year))
-	monthDir := filepath.Join(yearDir, strconv.Itoa(cnnvd.Month))
-	if err = os.MkdirAll(monthDir, os.ModePerm); err != nil {
-		return err
-	}
-
-	// 写入文件
-	filePath := filepath.Join(monthDir, fmt.Sprintf("%s.json", cnnvdID))
-	if err = utils.WriteFile(filePath, data); err != nil {
-		return xerrors.Errorf("failed to write %s: %w", filePath, err)
-	}
-	return nil
 }
