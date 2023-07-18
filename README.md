@@ -9,34 +9,48 @@
 
 ![cnnvd_logo.png](doc/img/cnnvd_logo.png)
 
+## 免责声明
+本项目仅供学习和研究使用。使用本项目中的代码和文件时，请遵守当地法律法规。如果您使用本项目中的任何内容造成侵权或其他违法行为，将自行承担全部责任。
+
+作者对本项目中的代码、文件或其他信息不提供任何明示或暗示的保证。作者不对因使用本项目中的内容所引起的任何直接或间接损失或损害承担责任。
+
+使用本项目即表示您同意遵守本免责声明。
+**若有侵权，请立即与本作者联系，谢谢**
+
+## 概述
 collect-cnnvd-vuln 为非官方应用程序，可以自动化的查询、下载和订阅漏洞信息。
 
-- 若你想全面了解CNNVD的信息，查看 [这里](./doc/cnnvd.md)
-
-- 你是否想全面的了解CNNVD的数据信息？
+- 若你想了解什么是CNNVD，他的数据格式是怎样的以及数据获取方式是怎样的，查看 [这里](./doc/cnnvd.md)
+- 若你想搜索CNNVD漏洞数据，请看 [这里](#0x03-搜索漏洞信息)
 - 你是否还在为无法收集和管理CNNVD漏洞数据而烦恼？
 - 你是否已经厌倦了机械化的CNNVD数据查询流程？
-- 你是否想为自己的漏洞扫描器中的漏洞增加更具本土化的画像？
+- 你是否想为自己的漏洞扫描器中的漏洞增加中文的描述？
 - 你是否想拥有一个属于自己的漏洞情报助手？
 
 `collect-**-vuln`项目归属为威胁情报收集系列，该系列主要用于威胁情报分析与收集，若你有更好的情报来源可以与我探讨。
 `collect-cnnvd-vuln` 为该系列的第一个项目，`collect-cnnvd-vuln` 收集到信息都上传至 [y4ney/cnnvd](https://github.com/y4ney/cnnvd)，可直接下载查看。
-本项目只用于学习交流，不可用于危害他人利益。
 
 ![img.png](doc/img/banner.png)
-# 0x01安装
+## 0x01安装
+
+```sh
+make build
+```
 
 # 0x02 使用
+
 ## 2.1 查看版本信息
 ```text
 $ collect-cnnvd-vuln version
-unknown version unknown
-build date: unknown
-commit: unknown
+collect-cnnvd-vuln version 
+build date: 2023-07-18 15:21:03
+commit: d511fda6120e5432e3a2c3b58f20c3644267d2d6
+
 
 https://github.com/y4ney/collect-cnnvd-vuln
 ```
-## 2.2 查看数据模型
+
+### 2.2 查看数据模型
 使用 `schema` 命令，可以查看数据模型。 该项目所收集的数据主要有漏洞列表、漏洞详情、威胁等级、供应商信息、产品信息和漏洞类型 6 种。
 ```text
 $ collect-cnnvd-vuln schema --help
